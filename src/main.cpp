@@ -1,3 +1,5 @@
+#include <chrono>
+#include <iostream>
 
 enum Opt
 {
@@ -114,9 +116,9 @@ enum Opt
 void loop()
 {
     unsigned char memory[] = {
-        Opt::MOV_NUMBER_TO_REG, 0, 0, 0, 30, 0, 0, 0, 0,
+        Opt::MOV_NUMBER_TO_REG, 30, 0, 0, 0, 0, 0, 0, 0,
         Opt::DEC_REG, 0, 0, 0, 0,
-        Opt::CMP_NUMBER_WITH_REG, 0, 0, 0, 0, 0, 0, 0, 0,
+        Opt::CMP_NUMBER_WITH_REG, 0, 0, 0, 1, 0, 0, 0, 0,
         Opt::JNZ_ADDRESS, 0, 0, 0, 9,
         Opt::HLT
     };
@@ -133,8 +135,25 @@ void loop()
 
     bool run = true;
 
+    std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
+
+    int takeTimeIn = 0;
+
     while (run)
     {
+        if(takeTimeIn <= 0) {
+            takeTimeIn = 100000000;
+            std::chrono::steady_clock::time_point time = std::chrono::steady_clock::now();
+            int duration = std::chrono::duration_cast<std::chrono::nanoseconds> (time - lastTime).count();
+            if (duration != 0) {
+                
+                std::cout << "operations took on average" << (duration/takeTimeIn) << "ns" << std::endl;
+            }
+            lastTime = std::chrono::steady_clock::now();
+        }
+
+        takeTimeIn--;
+
         opt = memory[isp++];
 
         switch (opt)
@@ -301,6 +320,8 @@ void loop()
         }
         case Opt::JZ_ADDRESS:
         {
+            unsigned int address = readInt(memory, isp);
+            if (zero) isp = address;
             break;
         }
 
@@ -321,6 +342,8 @@ void loop()
         }
         case Opt::JA_ADDRESS:
         {
+            unsigned int address = readInt(memory, isp);
+            if (!zero && !carry) isp = address;
             break;
         }
 
@@ -330,6 +353,8 @@ void loop()
         }
         case Opt::JNA_ADDRESS:
         {
+            unsigned int address = readInt(memory, isp);
+            if (zero != carry) isp = address;
             break;
         }
 
