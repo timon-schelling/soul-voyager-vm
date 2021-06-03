@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+#include <fstream>
 
 enum Opt
 {
@@ -113,15 +114,76 @@ enum Opt
         *(unsigned int *)&b;                                          \
     })
 
+#define writeInt(v, m, i) ( \
+    {                       \
+        i += 4;             \
+        m[i - 1] = v;       \
+        m[i - 2] = v >> 8;  \
+        m[i - 3] = v >> 16; \
+        m[i - 4] = v >> 24; \
+    })
+
 void loop()
 {
-    unsigned char memory[] = {
-        Opt::MOV_NUMBER_TO_REG, 30, 0, 0, 0, 0, 0, 0, 0,
-        Opt::DEC_REG, 0, 0, 0, 0,
-        Opt::CMP_NUMBER_WITH_REG, 0, 0, 0, 1, 0, 0, 0, 0,
-        Opt::JNZ_ADDRESS, 0, 0, 0, 9,
-        Opt::HLT
-    };
+    std::ifstream file("mem.bin", std::ios::in | std::ios::binary | std::ios::ate);
+    long size = file.tellg();
+    char memory [size] = {};
+    file.seekg(0, std::ios::beg);
+    file.read(memory, size);
+    file.close();
+
+    // unsigned char memory[] = {
+    //     Opt::MOV_NUMBER_TO_REG, 30, 0, 0, 0, 0, 0, 0, 0,
+    //     Opt::MOV_REG_TO_ADDRESS, 0, 0, 0, 0, 0, 0, 0, 200,
+    //     Opt::MOV_ADDRESS_TO_REG, 0, 0, 0, 200, 0, 0, 0, 1,
+    //     Opt::DEC_REG, 0, 0, 0, 0,
+    //     Opt::CMP_NUMBER_WITH_REG, 0, 0, 0, 1, 0, 0, 0, 0,
+    //     Opt::JNZ_ADDRESS, 0, 0, 0, 27,
+    //     Opt::HLT,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    //     };
 
     unsigned int registers[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -141,13 +203,15 @@ void loop()
 
     while (run)
     {
-        if(takeTimeIn <= 0) {
+        if (takeTimeIn <= 0)
+        {
             takeTimeIn = 10000000;
             std::chrono::steady_clock::time_point time = std::chrono::steady_clock::now();
-            double duration = std::chrono::duration_cast<std::chrono::microseconds> (time - lastTime).count();
-            if (duration != 0) {
-                std::string str = std::to_string((1000000/(duration/takeTimeIn))/1000000);
-                std::cout << "\e[?25l\r" << str << "MHz (" << std::to_string((duration/takeTimeIn)*1000) << "ns)";
+            double duration = std::chrono::duration_cast<std::chrono::microseconds>(time - lastTime).count();
+            if (duration != 0)
+            {
+                std::string str = std::to_string((1000000 / (duration / takeTimeIn)) / 1000000);
+                std::cout << "\e[?25l\r" << str << "MHz (" << std::to_string((duration / takeTimeIn) * 1000) << "ns)";
                 std::cout.flush();
             }
             lastTime = std::chrono::steady_clock::now();
@@ -190,6 +254,10 @@ void loop()
         }
         case Opt::MOV_REG_TO_ADDRESS:
         {
+            unsigned int reg = readInt(memory, isp);
+            unsigned int address = readInt(memory, isp);
+            unsigned int val = registers[reg];
+            writeInt(val, memory, address);
             break;
         }
         case Opt::MOV_REG_TO_REGADDRESS:
@@ -299,7 +367,8 @@ void loop()
         case Opt::JC_ADDRESS:
         {
             unsigned int address = readInt(memory, isp);
-            if (carry) isp = address;
+            if (carry)
+                isp = address;
             break;
         }
 
@@ -310,7 +379,8 @@ void loop()
         case Opt::JNC_ADDRESS:
         {
             unsigned int address = readInt(memory, isp);
-            if (!carry) isp = address;
+            if (!carry)
+                isp = address;
             break;
         }
 
@@ -321,7 +391,8 @@ void loop()
         case Opt::JZ_ADDRESS:
         {
             unsigned int address = readInt(memory, isp);
-            if (zero) isp = address;
+            if (zero)
+                isp = address;
             break;
         }
 
@@ -332,7 +403,8 @@ void loop()
         case Opt::JNZ_ADDRESS:
         {
             unsigned int address = readInt(memory, isp);
-            if (!zero) isp = address;
+            if (!zero)
+                isp = address;
             break;
         }
 
@@ -343,7 +415,8 @@ void loop()
         case Opt::JA_ADDRESS:
         {
             unsigned int address = readInt(memory, isp);
-            if (!zero && !carry) isp = address;
+            if (!zero && !carry)
+                isp = address;
             break;
         }
 
@@ -354,7 +427,8 @@ void loop()
         case Opt::JNA_ADDRESS:
         {
             unsigned int address = readInt(memory, isp);
-            if (zero != carry) isp = address;
+            if (zero != carry)
+                isp = address;
             break;
         }
 
