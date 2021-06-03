@@ -142,16 +142,16 @@ void loop()
     while (run)
     {
         if(takeTimeIn <= 0) {
-            takeTimeIn = 100000000;
+            takeTimeIn = 10000000;
             std::chrono::steady_clock::time_point time = std::chrono::steady_clock::now();
-            int duration = std::chrono::duration_cast<std::chrono::nanoseconds> (time - lastTime).count();
+            double duration = std::chrono::duration_cast<std::chrono::microseconds> (time - lastTime).count();
             if (duration != 0) {
-                
-                std::cout << "operations took on average" << (duration/takeTimeIn) << "ns" << std::endl;
+                std::string str = std::to_string((1000000/(duration/takeTimeIn))/1000000);
+                std::cout << "\e[?25l\r" << str << "MHz (" << std::to_string((duration/takeTimeIn)*1000) << "ns)";
+                std::cout.flush();
             }
             lastTime = std::chrono::steady_clock::now();
         }
-
         takeTimeIn--;
 
         opt = memory[isp++];
@@ -524,6 +524,7 @@ void loop()
         }
         }
     }
+    std::cout << "\e[?25h\n";
 }
 
 int main(int argc, char **argv)
