@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+docker build -f Dockerfile.development -t github.com/timon-schelling/soul-voyager-vm/dev-image .
+docker rm -f github.com_timon-schelling_soul-voyager-vm_dev-container
+docker run -d -p 2222:22 --security-opt seccomp:unconfined -v $PWD:/src --name github.com_timon-schelling_soul-voyager-vm_dev-container github.com/timon-schelling/soul-voyager-vm/dev-image

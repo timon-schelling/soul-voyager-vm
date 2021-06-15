@@ -125,9 +125,9 @@ enum Opt
 
 void loop()
 {
-    std::ifstream file("mem.bin", std::ios::in | std::ios::binary | std::ios::ate);
+    std::ifstream file("prgm.bin", std::ios::in | std::ios::binary | std::ios::ate);
     long size = file.tellg();
-    char memory [size] = {};
+    char *memory = new char[size]();
     file.seekg(0, std::ios::beg);
     file.read(memory, size);
     file.close();
@@ -546,6 +546,8 @@ void loop()
         }
     }
     std::cout << "\e[?25h\n";
+
+    delete[] memory;
 }
 
 int main(int argc, char **argv)
