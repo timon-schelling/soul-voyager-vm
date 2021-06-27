@@ -131,7 +131,7 @@ void loop()
     file.seekg(0, std::ios::beg);
     file.read(memory, size);
     file.close();
-    
+
     unsigned int registers[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     unsigned int isp = 0;
@@ -220,6 +220,9 @@ void loop()
         }
         case Opt::MOV_NUMBER_TO_ADDRESS:
         {
+            unsigned int val = readInt(memory, isp);
+            unsigned int address = readInt(memory, isp);
+            writeInt(val, memory, address);
             break;
         }
         case Opt::MOV_NUMBER_TO_REGADDRESS:
