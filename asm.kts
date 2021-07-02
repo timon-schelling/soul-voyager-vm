@@ -1,6 +1,9 @@
 #!/usr/bin/env kscript
 
+@file:DependsOn("org.mariuszgromada.math:MathParser.org-mXparser:4.4.2")
+
 import java.io.*
+import org.mariuszgromada.math.mxparser.*
 
 enum class Instruction(val code: UByte) {
     HLT(0.toUByte()),
@@ -107,7 +110,7 @@ enum class Instruction(val code: UByte) {
 }
 
 data class Label(val name: String, val location: Int)
-data class LabelUse(val name: String, val location: Int)
+data class LabelUse(val name: String, val location: Int, val offset: Int = 0)
 
 fun UInt.toUBytes() = listOf((this shr 24).toUByte(), (this shr 16).toUByte(), (this shr 8).toUByte(), this.toUByte())
 
@@ -116,11 +119,34 @@ val output = mutableListOf<UByte>()
 val labels = mutableListOf<Label>()
 val labelUses = mutableListOf<LabelUse>()
 
+fun addLabelUse(labelName: String) {
+    if (labelName.contains("|")) {
+        labelUses.add(Asm.LabelUse(labelName.substringBefore("|"), output.size, Expression(labelName.substringAfter("|")).calculate().toInt()))
+    } else {
+        labelUses.add(Asm.LabelUse(labelName, output.size))
+    }
+}
+
+fun addArg(arg: String): Boolean {
+    var arg = arg
+    if (arg.isNullOrBlank()) return true
+    if (arg.startsWith("@")) {
+        var labelName = arg.substringAfter("@")
+        addLabelUse(labelName)
+        arg = "0"
+    }
+    output.addAll(arg.toUInt().toUBytes())
+    return false
+}
+
+fun String.removeWhitespace() = replace("\\s".toRegex(), "")
+
+
 while(true) {
     val line = readLine()
 
     if(line != null && line.startsWith(":")) {
-        labels.add(Label(line.substringAfter(":"), output.size))
+        labels.add(Label(line.substringAfter(":").removeWhitespace(), output.size))
         continue
     }
 
@@ -131,27 +157,18 @@ while(true) {
 
     if(!line.contains(" ")) continue
     val args = line?.substringAfter(" ")
+
     if(args.isNullOrBlank()) continue
-    var arg1 = args?.substringBefore(",")
-    if(arg1.isNullOrBlank()) continue
-    if(arg1.startsWith("@")) {
-        labelUses.add(LabelUse(arg1.substringAfter("@"), output.size))
-        arg1 = "0"
-    }
-    output.addAll(arg1.toUInt().toUBytes())
+    if (addArg(args?.substringBefore(",").removeWhitespace())) continue
+
     if(!args.contains(",")) continue
-    var arg2 = args?.substringAfterLast(",")
-    if(arg2.isNullOrBlank()) continue
-    if(arg2.startsWith("@")) {
-        labelUses.add(LabelUse(arg2.substringAfter("@"), output.size))
-        arg2 = "0"
-    }
-    output.addAll(arg2.toUInt().toUBytes())
+    if (addArg(args?.substringAfter(",").removeWhitespace())) continue
 }
 
 labelUses.forEach { use ->
     val label = labels.find { use.name == it.name } ?: return@forEach 
-    val locationBytes = label.location.toUInt().toUBytes()
+    val locationBytes = (label.location + use.offset).toUInt().toUBytes()
+    // println("${label.location} + ${use.offset} = ${label.location + use.offset}")
     output[use.location] = locationBytes[0]
     output[use.location + 1] = locationBytes[1]
     output[use.location + 2] = locationBytes[2]
