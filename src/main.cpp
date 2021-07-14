@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 enum Opt
@@ -169,388 +170,396 @@ void loop()
 
         switch (opt)
         {
-        case Opt::HLT:
-        {
-            run = false;
-            break;
-        }
+            case Opt::HLT:
+            {
+                run = false;
+                break;
+            }
 
-        case Opt::MOV_REG_TO_REG:
-        {
-            unsigned int reg1 = readInt(memory, isp);
-            unsigned int reg2 = readInt(memory, isp);
-            registers[reg2] = registers[reg1];
-            break;
-        }
-        case Opt::MOV_ADDRESS_TO_REG:
-        {
-            unsigned int address = readInt(memory, isp);
-            unsigned int value = readInt(memory, address);
-            unsigned int reg = readInt(memory, isp);
-            registers[reg] = value;
-            break;
-        }
-        case Opt::MOV_REGADDRESS_TO_REG:
-        {
-            unsigned int reg1 = readInt(memory, isp);
-            unsigned int reg2 = readInt(memory, isp);
-            unsigned int address = registers[reg1];
-            unsigned int value = readInt(memory, address);
-            registers[reg2] = value;
-            break;
-        }
-        case Opt::MOV_REG_TO_ADDRESS:
-        {
-            unsigned int reg = readInt(memory, isp);
-            unsigned int address = readInt(memory, isp);
-            unsigned int val = registers[reg];
-            writeInt(val, memory, address);
-            break;
-        }
-        case Opt::MOV_REG_TO_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::MOV_NUMBER_TO_REG:
-        {
-            unsigned int number = readInt(memory, isp);
-            unsigned int reg = readInt(memory, isp);
-            registers[reg] = number;
-            break;
-        }
-        case Opt::MOV_NUMBER_TO_ADDRESS:
-        {
-            unsigned int val = readInt(memory, isp);
-            unsigned int address = readInt(memory, isp);
-            writeInt(val, memory, address);
-            break;
-        }
-        case Opt::MOV_NUMBER_TO_REGADDRESS:
-        {
-            break;
-        }
+            case Opt::MOV_REG_TO_REG:
+            {
+                unsigned int reg1 = readInt(memory, isp);
+                unsigned int reg2 = readInt(memory, isp);
+                registers[reg2] = registers[reg1];
+                break;
+            }
+            case Opt::MOV_ADDRESS_TO_REG:
+            {
+                unsigned int address = readInt(memory, isp);
+                unsigned int value = readInt(memory, address);
+                unsigned int reg = readInt(memory, isp);
+                registers[reg] = value;
+                break;
+            }
+            case Opt::MOV_REGADDRESS_TO_REG:
+            {
+                unsigned int reg1 = readInt(memory, isp);
+                unsigned int reg2 = readInt(memory, isp);
+                unsigned int address = registers[reg1];
+                unsigned int value = readInt(memory, address);
+                registers[reg2] = value;
+                break;
+            }
+            case Opt::MOV_REG_TO_ADDRESS:
+            {
+                unsigned int reg = readInt(memory, isp);
+                unsigned int address = readInt(memory, isp);
+                unsigned int val = registers[reg];
+                writeInt(val, memory, address);
+                break;
+            }
+            case Opt::MOV_REG_TO_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::MOV_NUMBER_TO_REG:
+            {
+                unsigned int number = readInt(memory, isp);
+                unsigned int reg = readInt(memory, isp);
+                registers[reg] = number;
+                break;
+            }
+            case Opt::MOV_NUMBER_TO_ADDRESS:
+            {
+                unsigned int val = readInt(memory, isp);
+                unsigned int address = readInt(memory, isp);
+                writeInt(val, memory, address);
+                break;
+            }
+            case Opt::MOV_NUMBER_TO_REGADDRESS:
+            {
+                break;
+            }
 
-        case Opt::ADD_REG_TO_REG:
-        {
-            break;
-        }
-        case Opt::ADD_REGADDRESS_TO_REG:
-        {
-            break;
-        }
-        case Opt::ADD_ADDRESS_TO_REG:
-        {
-            break;
-        }
-        case Opt::ADD_NUMBER_TO_REG:
-        {
-            break;
-        }
+            case Opt::ADD_REG_TO_REG:
+            {
+                break;
+            }
+            case Opt::ADD_REGADDRESS_TO_REG:
+            {
+                break;
+            }
+            case Opt::ADD_ADDRESS_TO_REG:
+            {
+                break;
+            }
+            case Opt::ADD_NUMBER_TO_REG:
+            {
+                break;
+            }
 
-        case Opt::SUB_REG_FROM_REG:
-        {
-            break;
-        }
-        case Opt::SUB_REGADDRESS_FROM_REG:
-        {
-            break;
-        }
-        case Opt::SUB_ADDRESS_FROM_REG:
-        {
-            break;
-        }
-        case Opt::SUB_NUMBER_FROM_REG:
-        {
-            break;
-        }
+            case Opt::SUB_REG_FROM_REG:
+            {
+                break;
+            }
+            case Opt::SUB_REGADDRESS_FROM_REG:
+            {
+                break;
+            }
+            case Opt::SUB_ADDRESS_FROM_REG:
+            {
+                break;
+            }
+            case Opt::SUB_NUMBER_FROM_REG:
+            {
+                break;
+            }
 
-        case Opt::INC_REG:
-        {
-            unsigned int reg = readInt(memory, isp);
-            registers[reg]++;
-            break;
-        }
+            case Opt::INC_REG:
+            {
+                unsigned int reg = readInt(memory, isp);
+                registers[reg]++;
+                break;
+            }
 
-        case Opt::DEC_REG:
-        {
-            unsigned int reg = readInt(memory, isp);
-            registers[reg]--;
-            break;
-        }
+            case Opt::DEC_REG:
+            {
+                unsigned int reg = readInt(memory, isp);
+                registers[reg]--;
+                break;
+            }
 
-        case Opt::CMP_REG_WITH_REG:
-        {
-            break;
-        }
-        case Opt::CMP_REGADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::CMP_ADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::CMP_NUMBER_WITH_REG:
-        {
-            unsigned int number = readInt(memory, isp);
-            unsigned int value = registers[readInt(memory, isp)];
-            zero = number == value;
-            carry = number < value;
-            break;
-        }
+            case Opt::CMP_REG_WITH_REG:
+            {
+                break;
+            }
+            case Opt::CMP_REGADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::CMP_ADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::CMP_NUMBER_WITH_REG:
+            {
+                unsigned int number = readInt(memory, isp);
+                unsigned int value = registers[readInt(memory, isp)];
+                zero = number == value;
+                carry = number < value;
+                break;
+            }
 
-        case Opt::JMP_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JMP_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            isp = address;
-            break;
-        }
-
-        case Opt::JC_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JC_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            if (carry)
+            case Opt::JMP_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JMP_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
                 isp = address;
-            break;
-        }
+                break;
+            }
 
-        case Opt::JNC_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JNC_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            if (!carry)
-                isp = address;
-            break;
-        }
+            case Opt::JC_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JC_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
+                if (carry)
+                    isp = address;
+                break;
+            }
 
-        case Opt::JZ_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JZ_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            if (zero)
-                isp = address;
-            break;
-        }
+            case Opt::JNC_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JNC_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
+                if (!carry)
+                    isp = address;
+                break;
+            }
 
-        case Opt::JNZ_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JNZ_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            if (!zero)
-                isp = address;
-            break;
-        }
+            case Opt::JZ_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JZ_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
+                if (zero)
+                    isp = address;
+                break;
+            }
 
-        case Opt::JA_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JA_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            if (!zero && !carry)
-                isp = address;
-            break;
-        }
+            case Opt::JNZ_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JNZ_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
+                if (!zero)
+                    isp = address;
+                break;
+            }
 
-        case Opt::JNA_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::JNA_ADDRESS:
-        {
-            unsigned int address = readInt(memory, isp);
-            if (zero != carry)
-                isp = address;
-            break;
-        }
+            case Opt::JA_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JA_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
+                if (!zero && !carry)
+                    isp = address;
+                break;
+            }
 
-        case Opt::PUSH_REG:
-        {
-            break;
-        }
-        case Opt::PUSH_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::PUSH_ADDRESS:
-        {
-            break;
-        }
-        case Opt::PUSH_NUMBER:
-        {
-            break;
-        }
+            case Opt::JNA_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::JNA_ADDRESS:
+            {
+                unsigned int address = readInt(memory, isp);
+                if (zero != carry)
+                    isp = address;
+                break;
+            }
 
-        case Opt::POP_REG:
-        {
-            break;
-        }
+            case Opt::PUSH_REG:
+            {
+                break;
+            }
+            case Opt::PUSH_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::PUSH_ADDRESS:
+            {
+                break;
+            }
+            case Opt::PUSH_NUMBER:
+            {
+                break;
+            }
 
-        case Opt::CALL_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::CALL_ADDRESS:
-        {
-            break;
-        }
+            case Opt::POP_REG:
+            {
+                break;
+            }
 
-        case Opt::RET:
-        {
-            break;
-        }
+            case Opt::CALL_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::CALL_ADDRESS:
+            {
+                break;
+            }
 
-        case Opt::MUL_REG:
-        {
-            break;
-        }
-        case Opt::MUL_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::MUL_ADDRESS:
-        {
-            break;
-        }
-        case Opt::MUL_NUMBER:
-        {
-            break;
-        }
+            case Opt::RET:
+            {
+                break;
+            }
 
-        case Opt::DIV_REG:
-        {
-            break;
-        }
-        case Opt::DIV_REGADDRESS:
-        {
-            break;
-        }
-        case Opt::DIV_ADDRESS:
-        {
-            break;
-        }
-        case Opt::DIV_NUMBER:
-        {
-            break;
-        }
+            case Opt::MUL_REG:
+            {
+                break;
+            }
+            case Opt::MUL_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::MUL_ADDRESS:
+            {
+                break;
+            }
+            case Opt::MUL_NUMBER:
+            {
+                break;
+            }
 
-        case Opt::AND_REG_WITH_REG:
-        {
-            break;
-        }
-        case Opt::AND_REGADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::AND_ADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::AND_NUMBER_WITH_REG:
-        {
-            break;
-        }
+            case Opt::DIV_REG:
+            {
+                break;
+            }
+            case Opt::DIV_REGADDRESS:
+            {
+                break;
+            }
+            case Opt::DIV_ADDRESS:
+            {
+                break;
+            }
+            case Opt::DIV_NUMBER:
+            {
+                break;
+            }
 
-        case Opt::OR_REG_WITH_REG:
-        {
-            break;
-        }
-        case Opt::OR_REGADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::OR_ADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::OR_NUMBER_WITH_REG:
-        {
-            break;
-        }
+            case Opt::AND_REG_WITH_REG:
+            {
+                break;
+            }
+            case Opt::AND_REGADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::AND_ADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::AND_NUMBER_WITH_REG:
+            {
+                break;
+            }
 
-        case Opt::XOR_REG_WITH_REG:
-        {
-            break;
-        }
-        case Opt::XOR_REGADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::XOR_ADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::XOR_NUMBER_WITH_REG:
-        {
-            break;
-        }
+            case Opt::OR_REG_WITH_REG:
+            {
+                break;
+            }
+            case Opt::OR_REGADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::OR_ADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::OR_NUMBER_WITH_REG:
+            {
+                break;
+            }
 
-        case Opt::NOT_REG:
-        {
-            break;
-        }
+            case Opt::XOR_REG_WITH_REG:
+            {
+                break;
+            }
+            case Opt::XOR_REGADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::XOR_ADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::XOR_NUMBER_WITH_REG:
+            {
+                break;
+            }
 
-        case Opt::SHL_REG_WITH_REG:
-        {
-            break;
-        }
-        case Opt::SHL_REGADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::SHL_ADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::SHL_NUMBER_WITH_REG:
-        {
-            break;
-        }
+            case Opt::NOT_REG:
+            {
+                break;
+            }
 
-        case Opt::SHR_REG_WITH_REG:
-        {
-            break;
-        }
-        case Opt::SHR_REGADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::SHR_ADDRESS_WITH_REG:
-        {
-            break;
-        }
-        case Opt::SHR_NUMBER_WITH_REG:
-        {
-            break;
-        }
+            case Opt::SHL_REG_WITH_REG:
+            {
+                break;
+            }
+            case Opt::SHL_REGADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::SHL_ADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::SHL_NUMBER_WITH_REG:
+            {
+                break;
+            }
 
-        default:
-        {
-            break;
-        }
+            case Opt::SHR_REG_WITH_REG:
+            {
+                break;
+            }
+            case Opt::SHR_REGADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::SHR_ADDRESS_WITH_REG:
+            {
+                break;
+            }
+            case Opt::SHR_NUMBER_WITH_REG:
+            {
+                break;
+            }
+
+            default:
+            {
+                break;
+            }
         }
     }
-    std::cout << "\e[?25h\n";
+
+    std::cout << "\n" << "memory: \n\n";
+    for (int i = 0; i < size; i++) {
+        if (i % 10 == 0) std::cout << "\n";
+        std::cout << std::hex << std::setfill('0') << std::setw(2) << (0xff & (unsigned int) memory[i]) << " ";
+    }
+    std::cout << "\n";
 
     delete[] memory;
+
+    std::cout << "\e[?25h\n";
 }
 
 int main(int argc, char **argv)
