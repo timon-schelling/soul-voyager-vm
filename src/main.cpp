@@ -552,7 +552,7 @@ void loop()
 
     std::cout << "\n" << "memory: \n\n";
     for (int i = 0; i < size; i++) {
-        if (i % 10 == 0) std::cout << "\n";
+        if (i % 9 == 0) std::cout << "\n";
         std::cout << std::hex << std::setfill('0') << std::setw(2) << (0xff & (unsigned int) memory[i]) << " ";
     }
     std::cout << "\n";
